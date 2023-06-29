@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 
 import "./styles.css";
 
+import HomePage from "./pages/homepage/homepage";
+import axios from "axios";
 
 function App() {
   // React States
@@ -16,12 +18,18 @@ function App() {
   };
 
   useEffect(() => {
-    fetch('http://localhost:3000/emps_data')
-      .then((r) => r.json())
-      .then((data) => {setEmps(data)})
+    axios.get('http://localhost:3000/emps_data')
+      .then((r) => {setEmps(r.data)})
       .catch((err) => {
         console.log(err);
       });
+  },[]);
+
+  useEffect(() => {
+    const loggedUser = localStorage.getItem('userId');
+    if (loggedUser) {
+      setIsSubmitted(true);
+    }
   },[]);
   
   const handleSubmit = (e) => {
@@ -30,21 +38,21 @@ function App() {
 
     var { uname, pass, company} = document.forms[0];
 
-    console.log(uname.value, pass.value, company.value)
-
-    fetch(`http://localhost:3000/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
-      .then((data) => {
-        console.log(data)
-          if (data.status === 200) {
-            setIsSubmitted(true);
-          } else {
-            setErrorMessages({name: "upass", message: errors.upass});
-          }
+    axios.get(`http://localhost:3000/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
+      .then((response) => {
+        if (response.status === 200) {
+          setIsSubmitted(true);
+          localStorage.setItem('userId', response.data.user.codUser);
+          localStorage.setItem('empId', response.data.user.idEmp);
+        } else {
+          setErrorMessages({name: "upass", message: errors.upass});
+        }
       })
       .catch((err) => {
         setErrorMessages({name: "others", message: errors.others});
       });
   };
+
 
   // Generate JSX code for error message
   const renderErrorMessage = (name) =>
@@ -55,36 +63,36 @@ function App() {
 
   // JSX code for login form
   const renderForm = (
-    <div className="form">
-      <form onSubmit={handleSubmit}>
-        <div className="input-container">
-          <label>Username </label>
-          <input type="text" name="uname" required />
-          {renderErrorMessage("uname")}
-        </div>
-        <div className="input-container">
-          <label>Password </label>
-          <input type="password" name="pass" required />
-          {renderErrorMessage("pass")}
-        </div>
-        <div className="input-container">
-          <label>Empresa </label>
-          <select name="company">
-            {emps.map(({codEmpresa, empresa},i) => <option value={codEmpresa} >{empresa}</option>)}
-          </select>
-        </div>
-        <div className="button-container">
-          <input type="submit" />
-        </div>
-      </form>
+    <div className="login-form">
+      <div className="title">Sign In</div>
+      <div className="form">
+        <form onSubmit={handleSubmit}>
+          <div className="input-container">
+            <label>Username </label>
+            <input type="text" name="uname" required />
+          </div>
+          <div className="input-container">
+            <label>Password </label>
+            <input type="password" name="pass" required />
+            {renderErrorMessage("upass")}
+          </div>
+          <div className="input-container">
+            <label>Empresa </label>
+            <select name="company">
+              {emps.map(({codEmpresa, empresa},i) => <option value={codEmpresa} >{empresa}</option>)}
+            </select>
+          </div>
+          {renderErrorMessage("others")}
+          <div className="button-container">
+            <input type="submit" />
+          </div>
+        </form>
+      </div>
     </div>
   );
   return (
     <div className="app">
-      <div className="login-form">
-        <div className="title">Sign In</div>
-        {isSubmitted ? <div>User is successfully logged in</div> : renderForm}
-      </div>
+      {isSubmitted ? <HomePage /> : renderForm}
     </div>
   );
 }
