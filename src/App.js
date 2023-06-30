@@ -17,8 +17,10 @@ function App() {
     others: "other error"
   };
 
+  const base_url = process.env.REACT_APP_BASEURL;
+
   useEffect(() => {
-    axios.get('http://localhost:3000/emps_data')
+    axios.get(`${base_url}/emps_data`)
       .then((r) => {setEmps(r.data)})
       .catch((err) => {
         console.log(err);
@@ -38,7 +40,7 @@ function App() {
 
     var { uname, pass, company} = document.forms[0];
 
-    axios.get(`http://localhost:3000/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
+    axios.get(`${base_url}/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
       .then((response) => {
         if (response.status === 200) {
           setIsSubmitted(true);

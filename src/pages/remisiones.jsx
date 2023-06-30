@@ -7,14 +7,16 @@ import DatosComp from "../components/datos_comp";
 function Remisiones(props){
     const [remisiones, setRemisiones] = useState([]);
     
+    const base_url = process.env.REACT_APP_BASEURL;
+
     useEffect(() => {
-        axios.get('http://localhost:3000/db2/remisiones',{params: props.user})
+        axios.get(`${base_url}/db2/remisiones`,{params: props.user})
          .then((r)=>{setRemisiones(r.data);})
          .catch((e)=>{console.log(e)});
     },[props.user])
 
     const handleClick = (nroComprobante) => {
-        axios.get('http://localhost:3000/db2/sendremisionset',{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
+        axios.get(`${base_url}/db2/sendremisionset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
              .then((r)=>{console.log(r);
                 window.location.reload();
                 })

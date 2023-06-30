@@ -6,14 +6,16 @@ import DatosComp from "../components/datos_comp";
 function NotasCredito(props){
     const [notascredito, setNotasCredito] = useState([]);
     
+    const base_url = process.env.REACT_APP_BASEURL;
+
     useEffect(() => {
-        axios.get('http://localhost:3000/db2/notcred',{params: props.user})
+        axios.get(`${base_url}/db2/notcred`,{params: props.user})
          .then((r)=>{setNotasCredito(r.data);})
          .catch((e)=>{console.log(e)});
     },[props.user])
     
     const handleClick = (nroComprobante) => {
-        axios.get('http://localhost:3000/db2/sendfacturaset',{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
+        axios.get(`${base_url}/db2/sendfacturaset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
              .then((r)=>{console.log(r);
                 window.location.reload();
                 })

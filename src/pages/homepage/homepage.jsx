@@ -14,12 +14,11 @@ import NotasCredito from '../notascredito';
 
 function HomePage() {
   const [isSubmitted, setIsSubmitted] = useState(true);
-  const [user, setUser] = useState({/* id: localStorage.getItem('empId'), userId: localStorage.getItem('userId') */})
+  const [user, setUser] = useState({})
 
   useEffect(() => {
     setUser({id: localStorage.getItem('empId'), userId: localStorage.getItem('userId')})
   },[]);
-  //const user = {id: localStorage.getItem('empId'), userId: localStorage.getItem('userId')};
   
   const handleLogout = () => {
     localStorage.clear();
@@ -33,6 +32,9 @@ function HomePage() {
       <header>
         <nav>
           <ul>
+          <li>
+              <Link to="/">Inicio</Link>
+            </li>
             <li>
               <Link to="/facturas">Facturas</Link>
             </li>
@@ -50,6 +52,7 @@ function HomePage() {
         <button onClick={handleLogout}>logout</button>
       </header>
       <Routes>
+        <Route path="/"/>
         <Route path="/facturas" element={<Facturas user={user}/>}/>
         <Route path="/notascredito" element={<NotasCredito user={user}/>}/>
         <Route path="/remisiones" element={<Remisiones user={user}/>}/>
