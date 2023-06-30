@@ -6,14 +6,16 @@ import DatosComp from '../components/datos_comp';
 function Autofacturas(props){
     const [autofacturas, setAutoFacturas] = useState([]);
     
+    const base_url = process.env.REACT_APP_BASEURL;
+
     useEffect(() => {
-        axios.get('http://localhost:3000/db2/autofacturas',{params: props.user})
+        axios.get(`${base_url}/db2/autofacturas`,{params: props.user})
          .then((r)=>{setAutoFacturas(r.data);})
          .catch((e)=>{console.log(e)});
     },[props.user])
 
     const handleClick = (nroComprobante) => {
-        axios.get('http://localhost:3000/db2/sendautofacturaset',{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
+        axios.get(`${base_url}/db2/sendautofacturaset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
              .then((r)=>{console.log(r);
                 window.location.reload();
                 })
