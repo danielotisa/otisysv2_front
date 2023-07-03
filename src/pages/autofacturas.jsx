@@ -6,7 +6,7 @@ import DatosComp from '../components/datos_comp';
 function Autofacturas(props){
     const [autofacturas, setAutoFacturas] = useState([]);
     
-    const base_url = process.env.REACT_APP_BASEURL;
+    const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
 
     useEffect(() => {
         axios.get(`${base_url}/db2/autofacturas`,{params: props.user})

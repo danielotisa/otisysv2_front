@@ -17,7 +17,9 @@ function App() {
     others: "other error"
   };
 
-  const base_url = process.env.REACT_APP_BASEURL;
+  
+
+  let base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
 
   useEffect(() => {
     axios.get(`${base_url}/emps_data`)
@@ -25,7 +27,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  },[]);
+  },[base_url]);
 
   useEffect(() => {
     const loggedUser = localStorage.getItem('userId');
@@ -33,12 +35,22 @@ function App() {
       setIsSubmitted(true);
     }
   },[]);
+
+  const handleChangeEnvironment = (e) => {
+    e.preventDefault();
+    var {env} = document.forms[0];
+    localStorage.setItem('env', env.value);
+  }
   
   const handleSubmit = (e) => {
     //Prevent page reload
     e.preventDefault();
 
-    var { uname, pass, company} = document.forms[0];
+    var { uname, pass, company, env} = document.forms[0];
+
+    base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+
+    localStorage.setItem('env', env.value);
 
     axios.get(`${base_url}/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
       .then((response) => {
@@ -85,6 +97,13 @@ function App() {
             </select>
           </div>
           {renderErrorMessage("others")}
+          <div className="input-container">
+            <label>Entorno </label>
+            <select name="env" onChange={handleChangeEnvironment}>
+              <option value= "test">Testing</option>
+              <option value= "prod">Producción</option>
+            </select>
+          </div>
           <div className="button-container">
             <input type="submit" />
           </div>
