@@ -12,7 +12,7 @@ function Autofacturas(props){
         axios.get(`${base_url}/db2/autofacturas`,{params: props.user})
          .then((r)=>{setAutoFacturas(r.data);})
          .catch((e)=>{console.log(e)});
-    },[props.user])
+    },[base_url, props.user])
 
     const handleClick = (nroComprobante) => {
         axios.get(`${base_url}/db2/sendautofacturaset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
