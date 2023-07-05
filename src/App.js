@@ -19,7 +19,7 @@ function App() {
 
   
 
-  let base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+  let base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
 
   useEffect(() => {
     axios.get(`${base_url}/emps_data`)
