@@ -11,7 +11,8 @@ function DatosComp(props) {
                 <div>
                     <li>{data.tipComprobante+'-'+data.serComprobante+'-'+data.nroComprobante}</li>
                     <p>{data.estadoSifen}</p>
-                    {(data.estadoSifen !== 'Aprobado') ? <button onClick={()=>props.onClick(data.nroComprobante)}>Enviar</button> : ''}
+                    {(data.estadoSifen !== 'Aprobado') ? <button onClick={()=>props.onClick(data.nroComprobante,'sendFactura')}>Enviar</button> : ''}
+                    {(data.jsonData !== null) ? <button onClick={()=>props.onClick(data.nroComprobante,'getKuDE')}>Obtener KuDE</button> : ''}
                 </div>
             )}
         </div>

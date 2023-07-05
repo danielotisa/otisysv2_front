@@ -82,7 +82,7 @@ function App() {
       <div className="form">
         <form onSubmit={handleSubmit}>
           <div className="input-container">
-            <label>Username </label>
+            <label>Usuario </label>
             <input type="text" name="uname" required />
           </div>
           <div className="input-container">
