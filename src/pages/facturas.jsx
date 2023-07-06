@@ -25,9 +25,17 @@ function Facturas(props){
                 params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante},
                 responseType: 'blob'})
             .then((resp) =>{
-                const file = new Blob([resp.data],{type:'application/pdf'});
-                const downUrl = window.URL.createObjectURL(file);
-                window.open(downUrl,);
+                //const file = new Blob([resp.data],{type:'application/pdf'});
+                //const downUrl = window.URL.createObjectURL(file);
+                //window.open(downUrl);
+                const href = window.URL.createObjectURL(resp.data);
+                const anchorElement = document.createElement('a');
+                anchorElement.href = href;
+                anchorElement.download = '001-001-'+nroComprobante;
+                document.body.appendChild(anchorElement);
+                anchorElement.click();
+                document.body.removeChild(anchorElement);
+                window.URL.revokeObjectURL(href);
             })
             .catch(e => {console.log(e)})
         }
