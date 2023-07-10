@@ -14,12 +14,43 @@ function Autofacturas(props){
          .catch((e)=>{console.log(e)});
     },[base_url, props.user])
 
-    const handleClick = (nroComprobante) => {
-        axios.get(`${base_url}/db2/sendautofacturaset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
+    const handleClick = (tipComprobante, nroComprobante, funcion) => {
+        if (funcion === 'sendComprobante'){
+            axios.get(`${base_url}/db2/sendautofacturaset`,{
+                params: {
+                    id:props.user.id, 
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante, 
+                    tipComprobante: tipComprobante
+                }})
              .then((r)=>{console.log(r);
                 window.location.reload();
                 })
              .catch((e)=>{console.log(e)});
+        }else if (funcion === 'getKuDE') {
+            axios.get(`${base_url}/getkude`,{
+                params: {
+                    id:props.user.id, 
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante, 
+                    tipComprobante: tipComprobante
+                },responseType: 'blob'})
+            .then((resp) =>{
+                //const file = new Blob([resp.data],{type:'application/pdf'});
+                //const downUrl = window.URL.createObjectURL(file);
+                //window.open(downUrl);
+                const href = window.URL.createObjectURL(resp.data);
+                const anchorElement = document.createElement('a');
+                anchorElement.href = href;
+                anchorElement.download = '001-001-'+nroComprobante;
+                document.body.appendChild(anchorElement);
+                anchorElement.click();
+                document.body.removeChild(anchorElement);
+                window.URL.revokeObjectURL(href);
+            })
+            .catch(e => {console.log(e)})
+        }
+        
     }
 
     return(

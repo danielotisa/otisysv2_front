@@ -13,17 +13,26 @@ function Facturas(props){
          .catch((e)=>{console.log(e)});
     },[base_url, props.user])
     
-    const handleClick = (nroComprobante, funcion) => {
-        if (funcion === 'sendFactura') {
-            axios.get(`${base_url}/db2/sendfacturaset`,{params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante}})
+    const handleClick = (tipComprobante, nroComprobante, funcion) => {
+        if (funcion === 'sendComprobante') {
+            axios.get(`${base_url}/db2/sendfacturaset`,{
+                params: {
+                    id:props.user.id,
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante
+                }})
             .then((r)=>{console.log(r);
                window.location.reload();
                })
             .catch((e)=>{console.log(e)});
         } else if (funcion === 'getKuDE') {
             axios.get(`${base_url}/getkude`,{
-                params: {id:props.user.id, userId: props.user.userId, nroComprobante:nroComprobante},
-                responseType: 'blob'})
+                params: {
+                    id:props.user.id, 
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante, 
+                    tipComprobante: tipComprobante
+                }, responseType: 'blob'})
             .then((resp) =>{
                 //const file = new Blob([resp.data],{type:'application/pdf'});
                 //const downUrl = window.URL.createObjectURL(file);
