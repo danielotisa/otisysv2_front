@@ -52,7 +52,8 @@ function Facturas(props){
                 params: {
                     id:props.user.id,
                     userId: props.user.userId, 
-                    nroComprobante:nroComprobante
+                    nroComprobante:nroComprobante,
+                    tipComprobante: tipComprobante
                 }})
             .then((r)=>{console.log(r);
                window.location.reload();
