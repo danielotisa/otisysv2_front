@@ -49,6 +49,18 @@ function Autofacturas(props){
                 window.URL.revokeObjectURL(href);
             })
             .catch(e => {console.log(e)})
+        } else if (funcion === 'consultaLote') {
+            axios.get(`${base_url}/consultlote`,{
+                params: {
+                    id:props.user.id,
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante,
+                    tipComprobante: tipComprobante
+                }})
+            .then((r)=>{console.log(r);
+               window.location.reload();
+               })
+            .catch((e)=>{console.log(e)});
         }
         
     }
