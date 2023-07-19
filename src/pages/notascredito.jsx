@@ -41,7 +41,7 @@ function NotasCredito(props){
                 const href = window.URL.createObjectURL(resp.data);
                 const anchorElement = document.createElement('a');
                 anchorElement.href = href;
-                anchorElement.download = '001-001-'+nroComprobante;
+                anchorElement.download = 'NC 001-001-'+nroComprobante;
                 document.body.appendChild(anchorElement);
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
@@ -50,6 +50,18 @@ function NotasCredito(props){
             .catch(e => {console.log(e)})
         } else if (funcion === 'consultaLote') {
             axios.get(`${base_url}/consultlote`,{
+                params: {
+                    id:props.user.id,
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante,
+                    tipComprobante: tipComprobante
+                }})
+            .then((r)=>{console.log(r);
+               window.location.reload();
+               })
+            .catch((e)=>{console.log(e)});
+        } else if (funcion === 'cancelaComp') {
+            axios.get(`${base_url}/cancelacionset`,{
                 params: {
                     id:props.user.id,
                     userId: props.user.userId, 
