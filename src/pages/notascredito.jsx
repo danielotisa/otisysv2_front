@@ -57,7 +57,9 @@ function NotasCredito(props){
                     tipComprobante: tipComprobante
                 }})
             .then((r)=>{console.log(r);
-               window.location.reload();
+                let {data} = r;
+                alert(data.mensaje);
+                window.location.reload();
                })
             .catch((e)=>{console.log(e)});
         } else if (funcion === 'cancelaComp') {
@@ -70,6 +72,20 @@ function NotasCredito(props){
                 }})
             .then((r)=>{console.log(r);
                window.location.reload();
+               })
+            .catch((e)=>{console.log(e)});
+        } else if (funcion === 'consultaDE') {
+            axios.get(`${base_url}/consultde`,{
+                params: {
+                    id:props.user.id,
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante,
+                    tipComprobante: tipComprobante
+                }})
+            .then((r)=>{console.log(r);
+                let {data} = r;
+                alert(data.mensaje);
+                window.location.reload();
                })
             .catch((e)=>{console.log(e)});
         }
