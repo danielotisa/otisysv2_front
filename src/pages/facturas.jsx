@@ -22,8 +22,10 @@ function Facturas(props){
                     nroComprobante:nroComprobante
                 }})
             .then((r)=>{console.log(r);
-               window.location.reload();
-               })
+                let {data} = r;
+                alert(data.mensaje);
+                window.location.reload();
+                })
             .catch((e)=>{console.log(e)});
         } else if (funcion === 'getKuDE') {
             axios.get(`${base_url}/getkude`,{
@@ -70,8 +72,10 @@ function Facturas(props){
                     tipComprobante: tipComprobante
                 }})
             .then((r)=>{console.log(r);
-               window.location.reload();
-               })
+                let {data} = r;
+                alert(data.mensaje);
+                window.location.reload();
+                })
             .catch((e)=>{console.log(e)});
         } else if (funcion === 'consultaDE') {
             axios.get(`${base_url}/consultde`,{

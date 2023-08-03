@@ -24,6 +24,8 @@ function Remisiones(props){
                     nroComprobante:nroComprobante
                 }})
              .then((r)=>{console.log(r);
+                let {data} = r;
+                alert(data.mensaje);
                 window.location.reload();
                 })
              .catch((e)=>{console.log(e)});
@@ -72,8 +74,10 @@ function Remisiones(props){
                     tipComprobante: tipComprobante
                 }})
             .then((r)=>{console.log(r);
-               window.location.reload();
-               })
+                let {data} = r;
+                alert(data.mensaje);
+                window.location.reload();
+                })
             .catch((e)=>{console.log(e)});
         } else if (funcion === 'consultaDE') {
             axios.get(`${base_url}/consultde`,{
