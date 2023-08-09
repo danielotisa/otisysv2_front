@@ -5,12 +5,12 @@ import {
   Link,
  } from "react-router-dom";
 
-import './homepage.styles.scss';
+import './HomePage.styles.scss';
 
-import Facturas from '../facturas';
-import Autofacturas from '../autofacturas';
-import Remisiones from '../remisiones';
-import NotasCredito from '../notascredito';
+import Facturas from '../facturas/Facturas';
+import Autofacturas from '../autofacturas/Autofacturas';
+import Remisiones from '../remisiones/Remisiones';
+import NotasCredito from '../notascredito/NotasCredito';
 
 function HomePage() {
   const [isSubmitted, setIsSubmitted] = useState(true);
