@@ -41,6 +41,7 @@ function Remisiones(props){
         } else if (funcion === 'consultaDE') {
             url = '/consultde';
         }else if (funcion === 'getKuDE') {
+            url = '';
             axios.get(`${base_url}/getkude`,{
                 params: {
                     id:props.user.id, 
