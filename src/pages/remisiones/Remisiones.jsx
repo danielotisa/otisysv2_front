@@ -60,6 +60,26 @@ function Remisiones(props){
                 window.URL.revokeObjectURL(href);
             })
             .catch(e => {console.log(e)});
+        } else if (funcion === 'getXML') {
+            url = '';
+            axios.get(`${base_url}/getxmlfile`,{
+                params: {
+                    id:props.user.id, 
+                    userId: props.user.userId, 
+                    nroComprobante:nroComprobante, 
+                    tipComprobante: tipComprobante
+                }, responseType: 'blob'})
+            .then((resp) =>{
+                const href = window.URL.createObjectURL(resp.data);
+                const anchorElement = document.createElement('a');
+                anchorElement.href = href;
+                anchorElement.download = 'REM 001-001-'+nroComprobante;
+                document.body.appendChild(anchorElement);
+                anchorElement.click();
+                document.body.removeChild(anchorElement);
+                window.URL.revokeObjectURL(href);
+            })
+            .catch(e => {console.log(e)});
         }
 
         if (url.length > 0){
@@ -113,6 +133,7 @@ function Remisiones(props){
                     {(params.row.estadoSifen === 'Lote Enviado') ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</button> : ''}
                     {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</button> : ''}
                     {(params.row.jsonData !== null) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</button> : ''}
+                    {(params.row.xmlData !== null) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</button> : ''}
                 </div>
             )
         },
