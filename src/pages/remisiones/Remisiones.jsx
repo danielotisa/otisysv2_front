@@ -6,7 +6,14 @@ import axios from "axios";
 function Remisiones(props){
     const [remisiones, setRemisiones] = useState([]);
     
-    const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+    //var url = window.location.hostname;
+    let base_url = localStorage.getItem('base_url');
+    /* if (url === process.env.REACT_APP_BASEIP_PROD) {
+        base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+    } else {
+        base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
+    } */
+    //const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
 
     const fetchData = (url, params) => {
         return axios.get(url, params)

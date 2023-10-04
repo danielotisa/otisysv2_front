@@ -19,8 +19,15 @@ function Login(props) {
     upass: "invalid username or password",
     others: "other error"
   };
-
-  let base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+  var url = window.location.hostname;
+  let base_url;
+  if (url === process.env.REACT_APP_BASEIP_PROD) {
+    base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+  } else {
+    base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
+  }  
+  
+  localStorage.setItem('base_url', env.value);
 
   useEffect(() => {
     axios.get(`${base_url}/emps_data`)
@@ -42,7 +49,7 @@ function Login(props) {
 
     var { uname, pass, company, env} = document.forms[0];
 
-    base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+    /* base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST; */
 
     localStorage.setItem('env', env.value);
 

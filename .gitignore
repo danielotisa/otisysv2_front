@@ -6,11 +6,13 @@
 .pnp.js
 .env
 
+
 # testing
 /coverage
 
 # production
 /build
+/src/img/*.*
 
 # misc
 .DS_Store
