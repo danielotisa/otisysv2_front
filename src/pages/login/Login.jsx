@@ -27,7 +27,7 @@ function Login(props) {
     base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
   }  
   
-  localStorage.setItem('base_url', env.value);
+  localStorage.setItem('base_url', base_url);
 
   useEffect(() => {
     axios.get(`${base_url}/emps_data`)
