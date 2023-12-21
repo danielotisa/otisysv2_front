@@ -20,14 +20,15 @@ function Login(props) {
     others: "other error"
   };
   var url = window.location.hostname;
+  var port = window.location.port;
   let base_url;
   if (url === process.env.REACT_APP_BASEIP_PROD) {
     base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
   } else {
-    base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
+    base_url = (process.env.REACT_APP_ENV === 'prod') ? `http://${url}:${port}/api` : process.env.REACT_APP_BASEURL_TEST;
   }  
   
-  localStorage.setItem('base_url', env.value);
+  localStorage.setItem('base_url', base_url);
 
   useEffect(() => {
     axios.get(`${base_url}/emps_data`)
