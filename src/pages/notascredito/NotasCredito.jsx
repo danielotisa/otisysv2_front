@@ -30,12 +30,13 @@ function NotasCredito(props){
          });
     },[base_url, props.user])
     
-    const handleClick = (tipComprobante, nroComprobante, funcion) => {
+    const handleClick = (serComprobante,tipComprobante, nroComprobante, funcion) => {
         let params = {
             id:props.user.id, 
             userId: props.user.userId,
             nroComprobante:nroComprobante, 
-            tipComprobante: tipComprobante};
+            tipComprobante: tipComprobante,
+            serComprobante: serComprobante};
         let url;
 
         if (funcion === 'sendComprobante') {
@@ -53,13 +54,14 @@ function NotasCredito(props){
                     id:props.user.id, 
                     userId: props.user.userId, 
                     nroComprobante:nroComprobante, 
-                    tipComprobante: tipComprobante
+                    tipComprobante: tipComprobante,
+                    serComprobante: serComprobante
                 }, responseType: 'blob'})
             .then((resp) =>{
                 const href = window.URL.createObjectURL(resp.data);
                 const anchorElement = document.createElement('a');
                 anchorElement.href = href;
-                anchorElement.download = 'NC 001-001-'+nroComprobante;
+                anchorElement.download = `NC ${serComprobante}-${nroComprobante}`;
                 document.body.appendChild(anchorElement);
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
@@ -73,13 +75,14 @@ function NotasCredito(props){
                     id:props.user.id, 
                     userId: props.user.userId, 
                     nroComprobante:nroComprobante, 
-                    tipComprobante: tipComprobante
+                    tipComprobante: tipComprobante,
+                    serComprobante: serComprobante
                 }, responseType: 'blob'})
             .then((resp) =>{
                 const href = window.URL.createObjectURL(resp.data);
                 const anchorElement = document.createElement('a');
                 anchorElement.href = href;
-                anchorElement.download = 'NC 001-001-'+nroComprobante;
+                anchorElement.download = `NC ${serComprobante}-${nroComprobante}`;
                 document.body.appendChild(anchorElement);
                 anchorElement.click();
                 document.body.removeChild(anchorElement);

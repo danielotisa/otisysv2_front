@@ -12,7 +12,7 @@
 
 # production
 /build
-/src/img/*.*
+#/src/img/*.*
 
 # misc
 .DS_Store
