@@ -2,7 +2,6 @@
 
 # dependencies
 /node_modules
-/src/img
 /.pnp
 .pnp.js
 .env
@@ -13,7 +12,7 @@
 
 # production
 /build
-#/src/img/*.*
+/src/img/*.*
 
 # misc
 .DS_Store
