@@ -29,12 +29,13 @@ function Autofacturas(props){
          });
     },[base_url, props.user])
 
-    const handleClick = (tipComprobante, nroComprobante, funcion) => {
+    const handleClick = (serComprobante,tipComprobante, nroComprobante, funcion) => {
         let params = {
             id:props.user.id, 
             userId: props.user.userId, 
             nroComprobante:nroComprobante, 
-            tipComprobante: tipComprobante
+            tipComprobante: tipComprobante,
+            serComprobante: serComprobante
         };
         let url;
         if (funcion === 'sendComprobante'){
@@ -52,7 +53,8 @@ function Autofacturas(props){
                     id:props.user.id, 
                     userId: props.user.userId, 
                     nroComprobante:nroComprobante, 
-                    tipComprobante: tipComprobante
+                    tipComprobante: tipComprobante,
+                    serComprobante: serComprobante
                 },responseType: 'blob'})
             .then((resp) =>{
                 const href = window.URL.createObjectURL(resp.data);
@@ -72,7 +74,8 @@ function Autofacturas(props){
                     id:props.user.id, 
                     userId: props.user.userId, 
                     nroComprobante:nroComprobante, 
-                    tipComprobante: tipComprobante
+                    tipComprobante: tipComprobante,
+                    serComprobante:serComprobante
                 }, responseType: 'blob'})
             .then((resp) =>{
                 const href = window.URL.createObjectURL(resp.data);
@@ -134,12 +137,12 @@ function Autofacturas(props){
             width: 300,
             renderCell: (params) => (
                 <div className="button-group">
-                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</button> : ''}
-                    {(params.row.estadoSifen === 'Aprobado') ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado') ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</button> : ''}
-                    {(params.row.jsonData !== null) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</button> : ''}
-                    {(params.row.xmlData !== null) ? <button onClick={()=>handleClick(params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</button> : ''}
+                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</button> : ''}
+                    {(params.row.estadoSifen === 'Aprobado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</button> : ''}
+                    {(params.row.jsonData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</button> : ''}
+                    {(params.row.xmlData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</button> : ''}
                 </div>
             )
         },
