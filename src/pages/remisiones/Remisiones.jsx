@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
+import { Button } from "react-bootstrap";
 
 
 function Remisiones(props){
@@ -14,6 +15,15 @@ function Remisiones(props){
         base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
     } */
     //const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+
+    const esMenor = (fecAlta, dias) => {
+        const fechaAlta = new Date(fecAlta); // Convierte fecAlta en un objeto Date
+        const fechaActual = new Date(); // Obtiene la fecha y hora actual
+        const diferenciaMilisegundos = fechaActual - fechaAlta; // Calcula la diferencia en milisegundos
+        const diferenciaDias = diferenciaMilisegundos / (1000 * 60 * 60 * 24); // Convierte la diferencia a días
+    
+        return diferenciaDias < dias; // Retorna true si la diferencia es menor a 2 días
+    }
 
     const fetchData = (url, params) => {
         return axios.get(url, params)
@@ -45,6 +55,10 @@ function Remisiones(props){
         } else if (funcion === 'consultaLote') {
             url = '/consultlote';
         } else if (funcion === 'cancelaComp') {
+            const confirmCancel = window.confirm('¿Estás seguro de que deseas anular este comprobante?');
+            if (!confirmCancel) {
+                return;
+            }
             url = '/cancelacionset';
         } else if (funcion === 'consultaDE') {
             url = '/consultde';
@@ -138,12 +152,12 @@ function Remisiones(props){
             width: 350,
             renderCell: (params) => (
                 <div className="button-group">
-                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</button> : ''}
-                    {(params.row.estadoSifen === 'Aprobado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</button> : ''}
-                    {(params.row.jsonData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</button> : ''}
-                    {(params.row.xmlData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</button> : ''}
+                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : ''}
+                    {(params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : ''}
+                    {(params.row.jsonData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
+                    {(params.row.xmlData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
                 </div>
             )
         },

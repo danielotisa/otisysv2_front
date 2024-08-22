@@ -1,9 +1,15 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
+import ListBox from "../../components/ListBox";
+import { Modal, Button } from "react-bootstrap";
+
 
 function NotasCredito(props){
     const [notascredito, setNotasCredito] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+    const [cancelParams, setCancelParams] = useState(null);
+    const [cursorStyle, setCursorStyle] = useState('default'); 
     
     //var url = window.location.hostname;
     let base_url = localStorage.getItem('base_url');
@@ -13,6 +19,15 @@ function NotasCredito(props){
         base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
     } */
     //const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
+
+    const esMenor = (fecAlta, dias) => {
+        const fechaAlta = new Date(fecAlta); // Convierte fecAlta en un objeto Date
+        const fechaActual = new Date(); // Obtiene la fecha y hora actual
+        const diferenciaMilisegundos = fechaActual - fechaAlta; // Calcula la diferencia en milisegundos
+        const diferenciaDias = diferenciaMilisegundos / (1000 * 60 * 60 * 24); // Convierte la diferencia a días
+    
+        return diferenciaDias < dias; // Retorna true si la diferencia es menor a 2 días
+    }
 
     const fetchData = (url, params) => {
         return axios.get(url, params)
@@ -31,6 +46,7 @@ function NotasCredito(props){
     },[base_url, props.user])
     
     const handleClick = (serComprobante,tipComprobante, nroComprobante, funcion) => {
+        setCursorStyle('wait');
         let params = {
             id:props.user.id, 
             userId: props.user.userId,
@@ -44,7 +60,22 @@ function NotasCredito(props){
         } else if (funcion === 'consultaLote') {
             url = '/consultlote';
         } else if (funcion === 'cancelaComp') {
-            url = '/cancelacionset';
+            const confirmCancel = window.confirm('¿Estás seguro de que deseas anular este comprobante?');
+            if (!confirmCancel) {
+                return;
+            }else{
+                const params = {
+                    id: props.user.id, 
+                    userId: props.user.userId, 
+                    nroComprobante: nroComprobante, 
+                    tipComprobante: tipComprobante,
+                    serComprobante: serComprobante
+                };
+                setCancelParams(params);
+                setShowModal(true); // Mostrar el modal
+                return;
+            }
+            //url = '/cancelacionset';
         } else if (funcion === 'consultaDE') {
             url = '/consultde';
         }else if (funcion === 'getKuDE') {
@@ -100,6 +131,23 @@ function NotasCredito(props){
         }
     }
 
+    const handleConfirmCancel = () => {
+        setCursorStyle('wait');
+        if (cancelParams.motivoAnula && cancelParams.motivoAnula !== "") {
+            setShowModal(false);
+
+            fetchData(`${base_url}/cancelacionset`, { params: cancelParams })
+                .then((data) => {
+                    alert(data.mensaje);
+                    fetchData(`${base_url}/db2/notcred`, { params: props.user })
+                        .then((d) => { setCursorStyle('default'); setNotasCredito(d); });
+                });
+        } else {
+            setCursorStyle('default');
+            alert('Por favor, selecciona una opción antes de confirmar.');
+        }
+    };
+
     const rows = notascredito;
 
     const columns = [
@@ -137,19 +185,32 @@ function NotasCredito(props){
             width: 350,
             renderCell: (params) => (
                 <div className="button-group">
-                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</button> : ''}
-                    {(params.row.estadoSifen === 'Aprobado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado') ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</button> : ''}
-                    {(params.row.jsonData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</button> : ''}
-                    {(params.row.xmlData !== null) ? <button onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</button> : ''}
+                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : ''}
+                    {(params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : ''}
+                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : ''}
+                    {(params.row.jsonData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
+                    {(params.row.xmlData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
                 </div>
             )
         },
     ]
 
+    const handleOptionChange = (option) => {
+        const { id, serComprobante, tipComprobante, nroComprobante } = cancelParams;
+        let params = {
+            id: id, 
+            userId: props.user.userId, 
+            nroComprobante: nroComprobante, 
+            tipComprobante: tipComprobante,
+            serComprobante: serComprobante,
+            motivoAnula: option // Agregar la opción seleccionada a los parámetros
+        };
+        setCancelParams(params)
+    }
+
     return(
-        <div>
+        <div style={{ cursor: cursorStyle }}>
             <h3>NOTAS DE CREDITO</h3>
             <DataGrid
                 getRowId={(row) => row.codSeg}
@@ -158,6 +219,18 @@ function NotasCredito(props){
                 initialState={{pagination:{paginationModel:{pageSize: 10}}}}
                 pageSizeOptions={[10, 25, 50, 100]}
             />
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Motivos Anulación</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ListBox id={cancelParams?.id} userId={cancelParams?.userId} onOptionChange={handleOptionChange}/>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="success" onClick={handleConfirmCancel}>Confirmar Anulación</Button>
+                    <Button variant="danger" onClick={() => setShowModal(false)}>Cerrar</Button>
+                </Modal.Footer>            
+            </Modal>
         </div>
     );
 }
