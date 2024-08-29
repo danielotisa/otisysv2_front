@@ -28,7 +28,7 @@ const ListBox = ({id, userId, onOptionChange }) => {
 
     const handleOptionChange = (e) => {
         setSelectedOption(e.target.value);
-        onOptionChange(selectedOption);
+        onOptionChange(e.target.value);
     };
 
     return (
