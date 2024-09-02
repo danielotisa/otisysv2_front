@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import Navbar from './Navbar';
 import Homepage from "../pages/Homepage";
+import { Button } from "react-bootstrap";
 
 
 const Header = () => {
@@ -18,7 +19,7 @@ const Header = () => {
                         <img src={require(`../img/${logo}.png`)} alt="" height="64" />
                     </Link>
                     <Navbar />
-                    <button className="logoutButton" onClick={handleLogout}>Logout</button>
+                    <Button variant="outline-primary" onClick={handleLogout}>Logout</Button>
                 </div>
             </header>
             <Homepage />

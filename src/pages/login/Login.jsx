@@ -54,12 +54,14 @@ function Login(props) {
 
     localStorage.setItem('env', env.value);
 
-    axios.get(`${base_url}/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
+    //axios.get(`${base_url}/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
+    axios.get(`${base_url}/login`,{params:{user: uname.value, id: company.value, pass: pass.value}})  
       .then((response) => {
         if (response.status === 200) {
             setIsSubmitted(true);
             localStorage.setItem('userId', response.data.user.codUser);
             localStorage.setItem('empId', response.data.user.idEmp);
+            localStorage.setItem('token', response.data.user.token);
             props.onLoginSuccess();
         } else {
           setErrorMessages({name: "upass", message: errors.upass});

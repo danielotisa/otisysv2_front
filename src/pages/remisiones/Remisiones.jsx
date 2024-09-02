@@ -2,20 +2,16 @@ import React, {useEffect, useState} from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import { Button } from "react-bootstrap";
+import useAuthToken from "../../components/useAuthToken";
 
 
 function Remisiones(props){
     const [remisiones, setRemisiones] = useState([]);
+    const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
+    const [permisosInfo, setPermisosInfo] = useState([]);
     
-    //var url = window.location.hostname;
     let base_url = localStorage.getItem('base_url');
-    /* if (url === process.env.REACT_APP_BASEIP_PROD) {
-        base_url = (process.env.REACT_APP_ENV === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
-    } else {
-        base_url = (process.env.REACT_APP_ENV === 'prod') ? 'http://'+url+':8000/api' : process.env.REACT_APP_BASEURL_TEST;
-    } */
-    //const base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST;
-
+    
     const esMenor = (fecAlta, dias) => {
         const fechaAlta = new Date(fecAlta); // Convierte fecAlta en un objeto Date
         const fechaActual = new Date(); // Obtiene la fecha y hora actual
@@ -39,7 +35,14 @@ function Remisiones(props){
          .then((d)=>{
              if (d){setRemisiones(d);}
          });
-    },[base_url, props.user])
+    },[base_url, props.user]);
+
+    useEffect(() => {
+        if (!loading) { 
+            const permisos = getPermisosInfo();
+            setPermisosInfo(permisos); 
+        }
+    }, [loading, getPermisosInfo]);
 
     const handleClick = (serComprobante, tipComprobante, nroComprobante, funcion) => {
         let params = {
@@ -152,10 +155,10 @@ function Remisiones(props){
             width: 350,
             renderCell: (params) => (
                 <div className="button-group">
-                    {(params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : ''}
-                    {(params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : ''}
-                    {(params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : ''}
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : '') : ''}
+                    {getPermisoPorParametro(permisosInfo,'ANULA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : '') : ''}
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : '') : ''}
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : '') : ''}
                     {(params.row.jsonData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
                     {(params.row.xmlData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
                 </div>

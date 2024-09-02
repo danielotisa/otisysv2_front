@@ -10,18 +10,22 @@ export const menuItems = [
         {
           title: 'Facturas',
           url: 'facturas',
+          permiso: 'MENU_FACTURA'
         },
         {
           title: 'Notas de Credito',
           url: 'notascredito',
+          permiso: 'MENU_NOTA_CREDITO'
         },
         {
           title: 'Remisiones',
           url: 'remisiones',
+          permiso: 'MENU_REMISION'
         },
         {
           title: 'Autofacturas',
           url: 'autofacturas',
+          permiso: 'MENU_AUTOFACTURA'
         }
       ],
     },
