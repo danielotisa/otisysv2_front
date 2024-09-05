@@ -11,8 +11,9 @@ import useAuthToken from "../components/useAuthToken";
 
 const Homepage = () => {
     const [user, setUser] = useState({});
-    const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
+    const { getPermisosInfo, getPermisoPorParametro, loading, isTokenExpired } = useAuthToken();
     const [permisosInfo, setPermisosInfo] = useState([]);
+    const [tokenExpired, setTokenExpired] = useState(false);
     
     useEffect(() => {
         setUser({id: localStorage.getItem('empId'), userId: localStorage.getItem('userId')})
@@ -22,9 +23,22 @@ const Homepage = () => {
         if (!loading) { // Solo llama a getPermisosInfo cuando loading es false
             const permisos = getPermisosInfo();
             setPermisosInfo(permisos); // Establecer los permisos obtenidos
+            setTokenExpired(isTokenExpired);
         }
-    }, [loading, getPermisosInfo]);
+    }, [loading, getPermisosInfo, isTokenExpired]);
     
+    useEffect(() => {
+        const verif_sesion = setInterval(() => {
+            if (tokenExpired){
+                alert("Su sesión ha expirado, favor vuelva a iniciar sesión.");
+                localStorage.clear();
+                window.location.reload();
+            }
+        }, 600000);
+
+        return () => clearInterval(verif_sesion);
+    },[tokenExpired])
+
     return (
         <div>
             <Routes>
