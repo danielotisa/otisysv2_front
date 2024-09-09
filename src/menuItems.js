@@ -29,4 +29,9 @@ export const menuItems = [
         }
       ],
     },
+    {
+      title: 'Inutilizar Numeración',
+      url: 'inutilizacion',
+      permiso: 'MENU_INUTILIZACION'
+    }
 ];

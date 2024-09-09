@@ -7,6 +7,7 @@ import Facturas from './facturas/Facturas';
 import Autofacturas from './autofacturas/Autofacturas';
 import Remisiones from './remisiones/Remisiones';
 import NotasCredito from './notascredito/NotasCredito';
+import Inutilizacion from "./inutilizacion/Inutilizacion";
 import useAuthToken from "../components/useAuthToken";
 
 const Homepage = () => {
@@ -47,6 +48,7 @@ const Homepage = () => {
                 {getPermisoPorParametro(permisosInfo,'MENU_NOTA_CREDITO') === 'S' ? <Route path="/notascredito" element={<NotasCredito user={user}/>}/> : ''}
                 {getPermisoPorParametro(permisosInfo,'MENU_REMISION') === 'S' ? <Route path="/remisiones" element={<Remisiones user={user}/>}/> : ''}
                 {getPermisoPorParametro(permisosInfo,'MENU_AUTOFACTURA') === 'S' ? <Route path="/autofacturas" element={<Autofacturas user={user}/>}/> : ''}
+                {getPermisoPorParametro(permisosInfo,'MENU_AUTOFACTURA') === 'S' ? <Route path="/inutilizacion" element={<Inutilizacion user={user}/>}/> : ''}
             </Routes>
         </div>
     );

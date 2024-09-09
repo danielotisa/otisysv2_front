@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import Dropdown from './Dropdown';
+import useAuthToken from "../components/useAuthToken";
 
 const MenuItems = ({ items }) => {
     const [dropdown, setDropdown] = useState(false);
+    const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
+    const [permisosInfo, setPermisosInfo] = useState([]);
     
     let ref = useRef();
 
@@ -24,6 +27,13 @@ const MenuItems = ({ items }) => {
             document.removeEventListener("touchstart", handler);
         };
     }, [dropdown]);
+
+    useEffect(() => {
+        if (!loading) { // Solo llama a getPermisosInfo cuando loading es false
+            const permisos = getPermisosInfo();
+            setPermisosInfo(permisos); // Establecer los permisos obtenidos
+        }
+    }, [loading, getPermisosInfo]);
 
     const onMouseEnter = () => {
         window.innerWidth > 960 && setDropdown(true);
@@ -47,9 +57,9 @@ const MenuItems = ({ items }) => {
             </button>
             <Dropdown submenus={items.submenu} dropdown={dropdown}/>
             </>
-        ) : (
-            <Link to={items.url}>{items.title}</Link>
-        )}
+        ) : 
+            (items.permiso !== undefined) ? (getPermisoPorParametro(permisosInfo,items.permiso) === 'S' ? <Link to={items.url}>{items.title}</Link> : '') : <Link to={items.url}>{items.title}</Link>
+        }
         </li>
     );
 };
