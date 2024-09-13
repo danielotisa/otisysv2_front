@@ -178,7 +178,7 @@ function Remisiones(props){
         },
     ]
     return(
-        <div>
+        <div style={{ cursor: cursorStyle }}>
             {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
             <div>
                 <h3>REMISIONES</h3>
