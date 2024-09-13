@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
 import ListBox from "../../components/ListBox";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Spinner } from "react-bootstrap";
 import useAuthToken from "../../components/useAuthToken";
 
 function Facturas(props){ 
@@ -12,6 +12,7 @@ function Facturas(props){
     const [cursorStyle, setCursorStyle] = useState('default');
     const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
     const [permisosInfo, setPermisosInfo] = useState([]); 
+    const [loadingTable, setLoadingTable] = useState(false);
 
     let base_url = localStorage.getItem('base_url');
     
@@ -38,9 +39,10 @@ function Facturas(props){
 
     useEffect(() => { 
         setCursorStyle('wait');
+        setLoadingTable(true);
         fetchData(`${base_url}/db2/facturas`,{params: props.user})
         .then((d)=>{
-            if (d){setCursorStyle('default'); setFacturas(d);}
+            if (d){setCursorStyle('default'); setFacturas(d); setLoadingTable(false);}
         });
     },[base_url, props.user])
 
@@ -69,6 +71,7 @@ function Facturas(props){
             setCursorStyle('default');
             const confirmCancel = window.confirm('¿Estás seguro de que deseas anular este comprobante?');
             if (!confirmCancel) {
+                setLoadingTable(false);
                 return;
             } else {
                 const params = {
@@ -131,10 +134,11 @@ function Facturas(props){
         }
 
         if (url.length > 0){
+            setLoadingTable(true);
             fetchData(`${base_url}${url}`, {params: params})
             .then((data) => {
                 alert(data.mensaje);
-                fetchData(`${base_url}/db2/facturas`,{params: props.user}).then((d)=>{ setCursorStyle('default'); setFacturas(d); });
+                fetchData(`${base_url}/db2/facturas`,{params: props.user}).then((d)=>{ setCursorStyle('default'); setFacturas(d); setLoadingTable(false);});
             });
         }
     }
@@ -143,12 +147,12 @@ function Facturas(props){
         setCursorStyle('wait');
         if (cancelParams.motivoAnula && cancelParams.motivoAnula !== "") {
             setShowModal(false);
-
+            setLoadingTable(true);
             fetchData(`${base_url}/cancelacionset`, { params: cancelParams })
                 .then((data) => {
                     alert(data.mensaje);
                     fetchData(`${base_url}/db2/facturas`, { params: props.user })
-                        .then((d) => { setCursorStyle('default'); setFacturas(d); });
+                        .then((d) => { setCursorStyle('default'); setFacturas(d); setLoadingTable(false); });
                 });
         } else {
             setCursorStyle('default');
@@ -221,26 +225,29 @@ function Facturas(props){
 
     return (
     <div style={{ cursor: cursorStyle }}>
-        <h3>FACTURAS</h3>
-        <DataGrid
-            getRowId={(row) => row.codSeg}
-            rows={rows}
-            columns={columns}
-            initialState={{pagination:{paginationModel:{pageSize: 10}}}}
-            pageSizeOptions={[10, 25, 50, 100]}
-        />
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-            <Modal.Header closeButton>
-                <Modal.Title>Motivos Anulación</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <ListBox id={cancelParams?.id} userId={cancelParams?.userId} onOptionChange={handleOptionChange}/>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="success" onClick={handleConfirmCancel}>Confirmar Anulación</Button>
-                <Button variant="danger" onClick={() => setShowModal(false)}>Cerrar</Button>
-            </Modal.Footer>            
-        </Modal>
+        {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
+        <div>
+            <h3>FACTURAS</h3>
+            <DataGrid
+                getRowId={(row) => row.codSeg}
+                rows={rows}
+                columns={columns}
+                initialState={{pagination:{paginationModel:{pageSize: 10}}}}
+                pageSizeOptions={[10, 25, 50, 100]}
+            />
+            <Modal show={showModal} onHide={() => setShowModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Motivos Anulación</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ListBox id={cancelParams?.id} userId={cancelParams?.userId} onOptionChange={handleOptionChange}/>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="success" onClick={handleConfirmCancel}>Confirmar Anulación</Button>
+                    <Button variant="danger" onClick={() => setShowModal(false)}>Cerrar</Button>
+                </Modal.Footer>            
+            </Modal>
+        </div>}
     </div>
 )};
 
