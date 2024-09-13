@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import useAuthToken from "../../components/useAuthToken";
 
 function Autofacturas(props){
     const [autofacturas, setAutoFacturas] = useState([]);
     const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
     const [permisosInfo, setPermisosInfo] = useState([]);
+    const [cursorStyle, setCursorStyle] = useState('default');
+    const [loadingTable, setLoadingTable] = useState(false);
     
     let base_url = localStorage.getItem('base_url');
     
@@ -21,18 +23,22 @@ function Autofacturas(props){
     }
 
     const fetchData = (url, params) => {
+        setCursorStyle('wait');
         return axios.get(url, params)
             .then((r) => {return r.data})
             .catch((e) => {
                 console.log(e);
+                setCursorStyle('default');
                 return null;
             });
     };
 
     useEffect(() => {
+        setCursorStyle('wait');
+        setLoadingTable(true);
         fetchData(`${base_url}/db2/autofacturas`,{params: props.user})
          .then((d)=>{
-             if (d){setAutoFacturas(d);console.log(d);}
+             if (d){setCursorStyle('default'); setAutoFacturas(d);console.log(d); setLoadingTable(false);}
          });
     },[base_url, props.user])
 
@@ -44,6 +50,7 @@ function Autofacturas(props){
     }, [loading, getPermisosInfo]);
 
     const handleClick = (serComprobante,tipComprobante, nroComprobante, funcion) => {
+        setCursorStyle('wait');
         let params = {
             id:props.user.id, 
             userId: props.user.userId, 
@@ -58,7 +65,9 @@ function Autofacturas(props){
             url = '/consultlote';
         } else if (funcion === 'cancelaComp') {
             const confirmCancel = window.confirm('¿Estás seguro de que deseas anular este comprobante?');
+            setCursorStyle('default');
             if (!confirmCancel) {
+                setLoadingTable(false);
                 return;
             }
             url = '/cancelacionset';
@@ -83,8 +92,9 @@ function Autofacturas(props){
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
                 window.URL.revokeObjectURL(href);
+                setCursorStyle('default');
             })
-            .catch(e => {console.log(e)})
+            .catch(e => {console.log(e); setCursorStyle('default');})
         } else if (funcion === 'getXML') {
             url = '';
             axios.get(`${base_url}/getxmlfile`,{
@@ -104,17 +114,20 @@ function Autofacturas(props){
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
                 window.URL.revokeObjectURL(href);
+                setCursorStyle('default');
             })
-            .catch(e => {console.log(e)});
+            .catch(e => {console.log(e); setCursorStyle('default');});
         }
 
         if (url.length > 0){
+            setLoadingTable(true);
             fetchData(`${base_url}${url}`,{params: params})
             .then((data) => {
                 alert(data.mensaje);
-                fetchData(`${base_url}/db2/autofacturas`,{params: props.user}).then((d)=>{setAutoFacturas(d);});
+                fetchData(`${base_url}/db2/autofacturas`,{params: props.user}).then((d)=>{setAutoFacturas(d); setLoadingTable(false);});
             });
         }
+        setCursorStyle('default');
     }
 
     const rows = autofacturas;
@@ -152,30 +165,33 @@ function Autofacturas(props){
             field: "options",
             headerName: "Opciones",
             sortable: false,
-            width: 300,
+            width: 350,
             renderCell: (params) => (
-                <div className="button-group">
+                <>
                     {getPermisoPorParametro(permisosInfo,'ENVIA_AUTOFACTURA') === 'S' ? ((params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ANULA_AUTOFACTURA') === 'S' ? ((params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ENVIA_AUTOFACTURA') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ENVIA_AUTOFACTURA') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : '') : ''}
                     {(params.row.jsonData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
                     {(params.row.xmlData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
-                </div>
+                </>
             )
         },
     ]
 
     return(
-        <div>
-            <h3>AUTOFACTURAS</h3>
-            <DataGrid
-                getRowId={(row) => row.codSeg}
-                rows={rows}
-                columns={columns}
-                initialState={{pagination:{paginationModel:{pageSize: 10}}}}
-                pageSizeOptions={[10, 25, 50, 100]}
-            />
+        <div style={{ cursor: cursorStyle }}>.
+            {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
+            <div>
+                <h3>AUTOFACTURAS</h3>
+                <DataGrid
+                    getRowId={(row) => row.codSeg}
+                    rows={rows}
+                    columns={columns}
+                    initialState={{pagination:{paginationModel:{pageSize: 10}}}}
+                    pageSizeOptions={[10, 25, 50, 100]}
+                />
+            </div>}
         </div>
     );
 }

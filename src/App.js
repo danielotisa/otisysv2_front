@@ -24,7 +24,7 @@ function App() {
 
   return (
     <div className="app">
-      {isLoggedIn ? <Header /> : <Login onLoginSuccess={handleLoginSuccess}/>} {/* <HomePage /> */}
+      {isLoggedIn ? <Header /> : <Login onLoginSuccess={handleLoginSuccess}/>}
     </div>
   );
 }

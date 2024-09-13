@@ -35,7 +35,7 @@ const Homepage = () => {
                 localStorage.clear();
                 window.location.reload();
             }
-        }, 600000);
+        }, 30000);
 
         return () => clearInterval(verif_sesion);
     },[tokenExpired])

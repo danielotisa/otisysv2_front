@@ -38,21 +38,21 @@ function Login(props) {
       });
   },[base_url]);
 
-  const handleChangeEnvironment = (e) => {
+  /* const handleChangeEnvironment = (e) => {
     e.preventDefault();
     var {env} = document.forms[0];
     localStorage.setItem('env', env.value);
-  }
+  } */
   
   const handleSubmit = (e) => {
     //Prevent page reload
     e.preventDefault();
 
-    var { uname, pass, company, env} = document.forms[0];
+    var { uname, pass, company} = document.forms[0];
 
     /* base_url = (localStorage.getItem('env') === 'prod') ? process.env.REACT_APP_BASEURL_PROD : process.env.REACT_APP_BASEURL_TEST; */
 
-    localStorage.setItem('env', env.value);
+    localStorage.setItem('env', 'prod');
 
     //axios.get(`${base_url}/empresa/${company.value}/user/${uname.value}/pass/${pass.value}`)
     axios.get(`${base_url}/login`,{params:{user: uname.value, id: company.value, pass: pass.value}})  
@@ -100,15 +100,15 @@ function Login(props) {
             </select>
           </div>
           {renderErrorMessage("others")}
-          <div className="input-container">
+          {/* <div className="input-container">
             <label>Entorno </label>
             <select name="env" onChange={handleChangeEnvironment}>
               <option value= "test">Testing</option>
               <option value= "prod">Producción</option>
             </select>
-          </div>
+          </div> */}
           <div className="button-container">
-            <input type="submit" />
+            <input type="submit" value="Login"/>
           </div>
         </form>
       </div>

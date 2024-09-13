@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
-import { Button } from "react-bootstrap";
+import { Button, Spinner } from "react-bootstrap";
 import useAuthToken from "../../components/useAuthToken";
 
 
@@ -9,6 +9,8 @@ function Remisiones(props){
     const [remisiones, setRemisiones] = useState([]);
     const { getPermisosInfo, getPermisoPorParametro, loading } = useAuthToken();
     const [permisosInfo, setPermisosInfo] = useState([]);
+    const [cursorStyle, setCursorStyle] = useState('default');
+    const [loadingTable, setLoadingTable] = useState(false);
     
     let base_url = localStorage.getItem('base_url');
     
@@ -22,18 +24,22 @@ function Remisiones(props){
     }
 
     const fetchData = (url, params) => {
+        setCursorStyle('wait');
         return axios.get(url, params)
-            .then((r) => {return r.data})
+            .then((r) => {setCursorStyle('default');return r.data})
             .catch((e) => {
                 console.log(e);
+                setCursorStyle('default');
                 return null;
             });
     };
 
     useEffect(() => {
+        setCursorStyle('wait');
+        setLoadingTable(true);
         fetchData(`${base_url}/db2/remisiones`,{params: props.user})
          .then((d)=>{
-             if (d){setRemisiones(d);}
+             if (d){setCursorStyle('default'); setRemisiones(d); setLoadingTable(false);}
          });
     },[base_url, props.user]);
 
@@ -45,6 +51,7 @@ function Remisiones(props){
     }, [loading, getPermisosInfo]);
 
     const handleClick = (serComprobante, tipComprobante, nroComprobante, funcion) => {
+        setCursorStyle('wait');
         let params = {
             id:props.user.id, 
             userId: props.user.userId, 
@@ -59,7 +66,9 @@ function Remisiones(props){
             url = '/consultlote';
         } else if (funcion === 'cancelaComp') {
             const confirmCancel = window.confirm('¿Estás seguro de que deseas anular este comprobante?');
+            setCursorStyle('default');
             if (!confirmCancel) {
+                setLoadingTable(false);
                 return;
             }
             url = '/cancelacionset';
@@ -84,6 +93,7 @@ function Remisiones(props){
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
                 window.URL.revokeObjectURL(href);
+                setCursorStyle('default');
             })
             .catch(e => {console.log(e)});
         } else if (funcion === 'getXML') {
@@ -105,15 +115,17 @@ function Remisiones(props){
                 anchorElement.click();
                 document.body.removeChild(anchorElement);
                 window.URL.revokeObjectURL(href);
+                setCursorStyle('default');
             })
             .catch(e => {console.log(e)});
         }
 
         if (url.length > 0){
+            setLoadingTable(true);
             fetchData(`${base_url}${url}`,{params: params})
             .then((data) => {
                 alert(data.mensaje);
-                fetchData(`${base_url}/db2/remisiones`,{params: props.user}).then((d)=>{setRemisiones(d);});
+                fetchData(`${base_url}/db2/remisiones`,{params: props.user}).then((d)=>{setRemisiones(d); setLoadingTable(false);});
             });
         } 
     }
@@ -154,27 +166,30 @@ function Remisiones(props){
             sortable: false,
             width: 350,
             renderCell: (params) => (
-                <div className="button-group">
+                <>
                     {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ANULA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Aprobado' && esMenor(params.row.fecAlta, 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : '') : ''}
                     {getPermisoPorParametro(permisosInfo,'ENVIA_REMISION') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : '') : ''}
                     {(params.row.jsonData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
                     {(params.row.xmlData !== null && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
-                </div>
+                </>
             )
         },
     ]
     return(
-        <div>
-            <h3>REMISIONES</h3>
-            <DataGrid
-                getRowId={(row) => row.codSeg}
-                rows={rows}
-                columns={columns}
-                initialState={{pagination:{paginationModel:{pageSize: 10}}}}
-                pageSizeOptions={[10, 25, 50, 100]}
-            />
+        <div style={{ cursor: cursorStyle }}>
+            {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
+            <div>
+                <h3>REMISIONES</h3>
+                <DataGrid
+                    getRowId={(row) => row.codSeg}
+                    rows={rows}
+                    columns={columns}
+                    initialState={{pagination:{paginationModel:{pageSize: 10}}}}
+                    pageSizeOptions={[10, 25, 50, 100]}
+                />
+            </div>}
         </div>
     );
 }
