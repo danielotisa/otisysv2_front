@@ -180,7 +180,7 @@ function Autofacturas(props){
     ]
 
     return(
-        <div style={{ cursor: cursorStyle }}>.
+        <div style={{ cursor: cursorStyle }}>
             {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
             <div>
                 <h3>AUTOFACTURAS</h3>
