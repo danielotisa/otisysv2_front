@@ -12,7 +12,7 @@ function Inutilizacion(props) {
         let params = {
             id: props.user.id,
             userId: props.user.userId,
-            tipComprobante: tipComprobante.selectedIndex,
+            tipComprobante: tipComprobante.value,
             establecimiento: establecimiento.value,
             punto: punto.value, 
             desde: desde.value, 
