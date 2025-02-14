@@ -134,6 +134,12 @@ function NotasCredito(props){
             fetchData(`${base_url}${url}`,{params: params})
             .then((data) => {
                 alert(data.mensaje);
+                if (data.estado && data.estado === 'Aprobado'){
+                    fetchData(`${base_url}/sendmail`, {params: params})
+                    .then((data1) => {
+                        alert(data1.msg);
+                    });
+                }
                 fetchData(`${base_url}/db2/notcred`,{params: props.user}).then((d)=>{setNotasCredito(d); setLoadingTable(false);});
             });
         }
