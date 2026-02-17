@@ -5,7 +5,7 @@ import {
   Link,
  } from "react-router-dom";
 
-import './HomePage.styles.scss';
+import './HomePage.styles.css';
 
 import Facturas from '../facturas/Facturas';
 import Autofacturas from '../autofacturas/Autofacturas';

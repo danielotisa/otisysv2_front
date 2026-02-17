@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-import './homepage/HomePage.styles.scss';
+import './homepage/HomePage.styles.css';
 
 import Facturas from './facturas/Facturas';
 import Autofacturas from './autofacturas/Autofacturas';

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Login.styles.scss";
+import Cookies from "js-cookie";
+import "./Login.styles.css";
 
 function Login(props) {
     // React States
@@ -9,7 +10,7 @@ function Login(props) {
   const [emps, setEmps] = useState([]);
 
   useEffect(() => {
-    const loggedUser = localStorage.getItem('userId');
+    const loggedUser = Cookies.get('userId');
     if (loggedUser) {
       setIsSubmitted(true);
     }
@@ -59,9 +60,9 @@ function Login(props) {
       .then((response) => {
         if (response.status === 200) {
             setIsSubmitted(true);
-            localStorage.setItem('userId', response.data.user.codUser);
-            localStorage.setItem('empId', response.data.user.idEmp);
-            localStorage.setItem('token', response.data.user.token);
+            Cookies.set('userId', response.data.user.codUser, { secure: true, sameSite: 'strict' });
+            Cookies.set('empId', response.data.user.idEmp, { secure: true, sameSite: 'strict' });
+            Cookies.set('accessToken', response.data.user.token, { secure: true, sameSite: 'strict' });
             props.onLoginSuccess();
         } else {
           setErrorMessages({name: "upass", message: errors.upass});
