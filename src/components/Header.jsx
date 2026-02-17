@@ -12,7 +12,8 @@ import logo4 from '../img/logo4.png';
 import logo5 from '../img/logo5.png';
 import logo6 from '../img/logo6.png';
 import logo7 from '../img/logo7.png';
-import logonull from '../img/logonull.png';
+import logo8 from '../img/logo8.png';
+/* import logonull from '../img/logonull.png'; */
 
 // Mapa de logos por empId
 const logoMap = {
@@ -22,7 +23,8 @@ const logoMap = {
   '5': logo5,
   '6': logo6,
   '7': logo7,
-  'null': logonull, // Fallback para empId null o no encontrado
+  '8': logo8,
+  //'null': logonull, // Fallback para empId null o no encontrado
 };
 
 
@@ -35,7 +37,7 @@ const Header = () => {
         window.location.reload();
     }
     const empId = Cookies.get('empId') || 'null';
-    const logoSrc = logoMap[empId] || logoMap['null']; // Default to logonull if empId not found
+    const logoSrc = logoMap[empId];// || logoMap['null']; // Default to logonull if empId not found
     return (
         <div>
             <header>
