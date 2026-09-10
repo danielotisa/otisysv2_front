@@ -47,21 +47,22 @@ const MenuItems = ({ items }) => {
         dropdown && setDropdown(false);
     };
 
-    return (
-        <li className="menu-items" ref={ref} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={closeDropdown}>
-        {items.submenu ? (
-            <>
-            <button type="button" aria-haspopup="menu" aria-expanded={dropdown ? "true" : "false"}
-             onClick={() => setDropdown((prev) => !prev)}>
-                {items.title}{' '}
-            </button>
-            <Dropdown submenus={items.submenu} dropdown={dropdown}/>
-            </>
-        ) : 
-            (items.permiso !== undefined) ? (getPermisoPorParametro(permisosInfo,items.permiso) === 'S' ? <Link to={items.url}>{items.title}</Link> : '') : <Link to={items.url}>{items.title}</Link>
-        }
-        </li>
-    );
+  return (
+    <li className="menu-items" ref={ref} onClick={closeDropdown}>
+      {items.submenu ? (
+        <div className="menu-container" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+          <button type="button" aria-haspopup="menu" aria-expanded={dropdown ? "true" : "false"}
+            onClick={() => setDropdown((prev) => !prev)}>
+            {items.title}
+            <span className="arrow"></span>
+          </button>
+          <Dropdown submenus={items.submenu} dropdown={dropdown}/>
+        </div>
+      ) :
+        (items.permiso !== undefined) ? (getPermisoPorParametro(permisosInfo,items.permiso) === 'S' ? <Link to={items.url}>{items.title}</Link> : null) : <Link to={items.url}>{items.title}</Link>
+      }
+    </li>
+  );
 };
 
 export default MenuItems;

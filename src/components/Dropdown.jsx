@@ -15,11 +15,11 @@ const Dropdown = ({ submenus, dropdown }) => {
     return (
       <ul className={`dropdown ${dropdown ? "show" : ""}`}>
         {submenus.map((submenu, index) => (
-          getPermisoPorParametro(permisosInfo,submenu.permiso) === 'S' ? 
-          (<li key={index} className="menu-items">
+          getPermisoPorParametro(permisosInfo,submenu.permiso) === 'S' ?
+          (<li key={index}>
             <a href={submenu.url}>{submenu.title}</a>
           </li>)
-        : ''
+        : null
         ))}
       </ul>
     );

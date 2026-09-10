@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import ListBox from "../../components/ListBox";
-import { Modal, Button, Spinner } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import useAuthToken from "../../components/useAuthToken";
 
 
@@ -182,73 +182,149 @@ function NotasCredito(props){
         {
             field: "nroComprobante",
             headerName: "Nota de Crédito Nro.",
-            width: 150,
+            minWidth: 140,
+            maxWidth: 180,
+            flex: 0.8,
             valueGetter: (params) => `${params.row.tipComprobante}-${params.row.serComprobante}-${params.row.nroComprobante}`
         },
         {
             field: "fecComprobante",
             headerName: "Fecha",
             type: 'datetime',
-            valueGetter: ({ value }) => value && new Date(value).toLocaleDateString(),
-            width: 100
+            minWidth: 90,
+            maxWidth: 120,
+            flex: 0.6,
+            valueGetter: ({ value }) => value && new Date(value).toLocaleDateString()
         },
         {
             field: "nomCliente",
             headerName: "Cliente",
-            width: 200
+            minWidth: 150,
+            flex: 1.2
         },
         {
             field: "cdc",
             headerName: "CDC",
-            width: 400
+            minWidth: 200,
+            flex: 2.0
         },
         {
             field: "estadoSifen",
-            headerName: "Estado"
+            headerName: "Estado",
+            minWidth: 120,
+            maxWidth: 150,
+            flex: 0.8
         },
         {
             field: "options",
             headerName: "Opciones",
             sortable: false,
-            width: 350,
+            minWidth: 400,
+            maxWidth: 500,
+            flex: 2.5,
             renderCell: (params) => (
-                <>
-                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' ? ((params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button> : '') : ''}
-                    {getPermisoPorParametro(permisosInfo,'ANULA_NOTA_CREDITO') === 'S' ? ((params.row.estadoSifen === 'Aprobado' && esMenor((params.row.fecAlta !== null ? params.row.fecAlta : params.row.fecComprobante), 7)) ? <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button> : '') : ''}
-                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado') ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button> : '') : ''}
-                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' ? ((params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado' ) ? <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button> : '') : ''}
-                    {(params.row.jsonData !== 'N' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button> : ''}
-                    {(params.row.xmlData !== 'N' && params.row.estadoSifen !== 'Anulado') ? <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button> : ''}
-                </>
+                <div className="action-buttons-container">
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' && (params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') && (
+                        <Button size="sm" variant="success" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'sendComprobante')}>Enviar</Button>
+                    )}
+                    {getPermisoPorParametro(permisosInfo,'ANULA_NOTA_CREDITO') === 'S' && (params.row.estadoSifen === 'Aprobado' && esMenor((params.row.fecAlta !== null ? params.row.fecAlta : params.row.fecComprobante), 7)) && (
+                        <Button size="sm" variant="danger" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'cancelaComp')}>Anular</Button>
+                    )}
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' && params.row.estadoSifen === 'Lote Enviado' && (
+                        <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaLote')}>Consultar Envio</Button>
+                    )}
+                    {getPermisoPorParametro(permisosInfo,'ENVIA_NOTA_CREDITO') === 'S' && (params.row.estadoSifen === 'Lote Enviado' || params.row.estadoSifen === 'Lote Rechazado') && (
+                        <Button size="sm" variant="primary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'consultaDE')}>Consultar CDC</Button>
+                    )}
+                    {params.row.jsonData !== 'N' && params.row.estadoSifen !== 'Anulado' && (
+                        <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getKuDE')}>Desc. KuDE</Button>
+                    )}
+                    {params.row.xmlData !== 'N' && params.row.estadoSifen !== 'Anulado' && (
+                        <Button size="sm" variant="secondary" onClick={()=>handleClick(params.row.serComprobante,params.row.tipComprobante,params.row.nroComprobante,'getXML')}>Desc. XML</Button>
+                    )}
+                </div>
             )
         },
     ]
 
     return(
-        <div style={{ cursor: cursorStyle }}>
-            {loadingTable ? <h3><Spinner animation="border" variant="primary" />Cargando</h3> :
-            <div>
-                <h3>NOTAS DE CREDITO</h3>
-                <DataGrid
-                    getRowId={(row) => row.codSeg}
-                    rows={rows}
-                    columns={columns}
-                    initialState={{pagination:{paginationModel:{pageSize: 10}}}}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                />
-                <Modal show={showModal} onHide={() => setShowModal(false)}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Motivos Anulación</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <ListBox id={cancelParams?.id} userId={cancelParams?.userId} onOptionChange={handleOptionChange}/>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="success" onClick={handleConfirmCancel}>Confirmar Anulación</Button>
-                        <Button variant="danger" onClick={() => setShowModal(false)}>Cerrar</Button>
-                    </Modal.Footer>            
-                </Modal>
-            </div>}
+        <div className="content" style={{ cursor: cursorStyle }}>
+            <div className="page-header">
+                <h1 className="page-title">Notas de Crédito</h1>
+                <p className="page-subtitle">Gestione el envío y consulta de sus notas de crédito electrónicas</p>
+            </div>
+
+            {loadingTable ? (
+                <div className="loading">
+                    <div className="spinner"></div>
+                    <span>Cargando notas de crédito...</span>
+                </div>
+            ) : (
+                <div className="table-container data-grid-container">
+                    <div className="table-header">
+                        <h3>Listado de Notas de Crédito</h3>
+                    </div>
+                    <DataGrid
+                        getRowId={(row) => row.codSeg}
+                        rows={rows}
+                        columns={columns}
+                        initialState={{pagination:{paginationModel:{pageSize: 10}}}}
+                        pageSizeOptions={[10, 25, 50, 100]}
+                        autoHeight
+                        disableColumnResize={false}
+                        sx={{
+                            border: 'none',
+                            width: '100%',
+                            '& .MuiDataGrid-main': {
+                                overflow: 'hidden',
+                            },
+                            '& .MuiDataGrid-cell': {
+                                borderBottom: '1px solid #e0e0e0',
+                                whiteSpace: 'normal',
+                                lineHeight: '1.2',
+                                padding: '8px',
+                            },
+                            '& .MuiDataGrid-columnHeaders': {
+                                backgroundColor: '#f8f9fa',
+                                borderBottom: '2px solid #e0e0e0',
+                            },
+                            '& .MuiDataGrid-row:hover': {
+                                backgroundColor: '#f8f9fa',
+                            },
+                            '& .MuiDataGrid-columnHeaderTitle': {
+                                fontWeight: 600,
+                                fontSize: '0.875rem',
+                            },
+                            '& .MuiDataGrid-cell[data-field="options"]': {
+                                overflow: 'visible',
+                                padding: '4px',
+                            },
+                            '& .action-buttons-container': {
+                                display: 'flex',
+                                alignItems: 'center',
+                                flexWrap: 'wrap',
+                                gap: '4px',
+                            },
+                            '& .action-buttons-container > *': {
+                                whiteSpace: 'nowrap',
+                            }
+                        }}
+                    />
+                </div>
+            )}
+
+            <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Motivos de Anulación</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <ListBox id={cancelParams?.id} userId={cancelParams?.userId} onOptionChange={handleOptionChange}/>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="success" onClick={handleConfirmCancel}>Confirmar Anulación</Button>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>Cancelar</Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     );
 }

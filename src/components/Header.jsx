@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
-
 import Navbar from './Navbar';
 import Homepage from "../pages/Homepage";
-import { Button } from "react-bootstrap";
-
 
 const Header = () => {
     const handleLogout = () => {
@@ -16,10 +13,13 @@ const Header = () => {
             <header>
                 <div className="nav-area">
                     <Link to="/" className="logo">
-                        <img src={require(`../img/${logo}.png`)} alt="" height="64" />
+                        <img src={require(`../img/${logo}.png`)} alt="Logo" />
+                        <span>Sistema de Facturación</span>
                     </Link>
                     <Navbar />
-                    <Button variant="outline-primary" onClick={handleLogout}>Logout</Button>
+                    <button className="logout-btn" onClick={handleLogout}>
+                        Cerrar Sesión
+                    </button>
                 </div>
             </header>
             <Homepage />

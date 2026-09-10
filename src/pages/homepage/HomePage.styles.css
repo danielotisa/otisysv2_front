@@ -1,7 +1,55 @@
 .homepage {
-    flex-direction: column;
-    justify-content: flex-start;
-    padding: 20px 80px;
+    min-height: 100vh;
+    padding: var(--spacing-2xl);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-2xl);
+    margin-bottom: var(--spacing-3xl);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dashboard-card {
+    background: var(--bg-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-light);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    transition: var(--transition-normal);
+    border: 1px solid var(--border-light);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.card-icon {
+    color: var(--primary-purple);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: center;
+}
+
+.dashboard-card h3 {
+    color: var(--text-dark);
+    margin-bottom: var(--spacing-sm);
+    font-size: var(--font-size-xl);
+}
+
+.dashboard-card p {
+    color: var(--text-medium);
+    margin-bottom: var(--spacing-xl);
+    font-size: var(--font-size-base);
+}
+
+.dashboard-card .btn {
+    margin: 0 auto;
+    display: inline-block;
 }
 
 .datosComponent {
@@ -11,8 +59,20 @@
 .button-group {
     display: flex;
     flex-flow: row wrap;
+    gap: var(--spacing-sm);
 }
 
-h3{
-    text-align: center;
+@media (max-width: 768px) {
+    .homepage {
+        padding: var(--spacing-lg);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+
+    .dashboard-card {
+        padding: var(--spacing-lg);
+    }
 }
