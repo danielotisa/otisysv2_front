@@ -262,18 +262,25 @@ p {
   background-color: var(--bg-white);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-light);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .table-header {
   background: var(--primary-gradient);
   color: white;
-  padding: var(--spacing-lg) var(--spacing-2xl);
+  padding: var(--spacing-lg) var(--spacing-lg);
 }
 
 .table-header h3 {
   margin: 0;
   color: white;
+}
+
+.data-grid-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Error and Success Messages */
@@ -430,6 +437,24 @@ p {
   .data-grid-container .MuiDataGrid-columnHeaderTitle {
     font-size: 0.8rem !important;
   }
+}
+
+/* Global DataGrid compact padding - reduces horizontal padding for all DataGrids */
+.MuiDataGrid-cell {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+.MuiDataGrid-columnHeaders .MuiDataGrid-columnHeaderTitle {
+  padding-left: 6px !important;
+  padding-right: 6px !important;
+}
+
+/* CDC column specific styling - ensures full 44-char string visibility */
+.MuiDataGrid-cell[data-field="cdc"] {
+  font-family: 'monospace', monospace !important;
+  font-size: 0.8rem !important;
+  min-width: 380px !important;
 }
 
 @media (max-width: 768px) {

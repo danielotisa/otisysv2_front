@@ -168,9 +168,9 @@ header {
 
 /* Content Area */
 .content {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: var(--spacing-3xl) var(--spacing-2xl);
+  padding: var(--spacing-3xl) var(--spacing-lg);
 }
 
 .page-header {

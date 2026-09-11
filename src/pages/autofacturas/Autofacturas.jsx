@@ -136,32 +136,34 @@ function Autofacturas(props){
         {
             field: "nroComprobante",
             headerName: "Autofactura Nro.",
-            minWidth: 140,
-            maxWidth: 180,
-            flex: 0.8,
+            minWidth: 180,
+            flex: 1,
             valueGetter: (params) => `${params.row.tipComprobante}-${params.row.serComprobante}-${params.row.nroComprobante}`
         },
         {
             field: "fecComprobante",
             headerName: "Fecha",
             type: 'datetime',
-            minWidth: 90,
-            maxWidth: 120,
+            minWidth: 100,
+            maxWidth: 130,
             flex: 0.6,
             valueGetter: ({ value }) => value && new Date(value).toLocaleDateString()
         },
         {
             field: "cliNombProveedor",
             headerName: "Cliente",
-            minWidth: 150,
+            minWidth: 180,
             flex: 1.2,
             valueGetter: (params) => params.row.cli.NombProveedor
         },
         {
             field: "cdc",
             headerName: "CDC",
-            minWidth: 200,
-            flex: 2.0
+            minWidth: 380,
+            flex: 3,
+            renderCell: (params) => (
+                <span style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{params.value}</span>
+            )
         },
         {
             field: "estadoSifen",
@@ -174,9 +176,8 @@ function Autofacturas(props){
             field: "options",
             headerName: "Opciones",
             sortable: false,
-            minWidth: 400,
-            maxWidth: 500,
-            flex: 2.5,
+            minWidth: 500,
+            flex: 3,
             renderCell: (params) => (
                 <div className="action-buttons-container">
                     {getPermisoPorParametro(permisosInfo,'ENVIA_AUTOFACTURA') === 'S' && (params.row.estadoSifen !== 'Aprobado' && params.row.estadoSifen !== 'Anulado') && (
@@ -231,11 +232,12 @@ function Autofacturas(props){
                             border: 'none',
                             width: '100%',
                             '& .MuiDataGrid-main': {
-                                overflow: 'hidden',
+                                overflow: 'auto',
                             },
                             '& .MuiDataGrid-cell': {
                                 borderBottom: '1px solid #e0e0e0',
                                 whiteSpace: 'normal',
+                                wordBreak: 'break-word',
                                 lineHeight: '1.2',
                                 padding: '8px',
                             },
